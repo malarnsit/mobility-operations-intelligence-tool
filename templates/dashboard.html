@@ -1,0 +1,763 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Mobility Operations Dashboard
+        </h1>
+
+        <p>
+            Day 2 - Core Analytics
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     VALIDATION ERRORS
+===================================================== -->
+
+{% if validation and validation.errors %}
+
+<div class="alert error">
+
+    <strong>
+        Validation Errors:
+    </strong>
+
+    <ul>
+
+        {% for error in validation.errors %}
+
+        <li>
+            {{ error }}
+        </li>
+
+        {% endfor %}
+
+    </ul>
+
+</div>
+
+{% endif %}
+
+
+<!-- =====================================================
+     VALIDATION WARNINGS
+===================================================== -->
+
+{% if validation and validation.warnings %}
+
+<div class="alert warning">
+
+    <strong>
+        Data Warnings:
+    </strong>
+
+    <ul>
+
+        {% for warning in validation.warnings[:10] %}
+
+        <li>
+            {{ warning }}
+        </li>
+
+        {% endfor %}
+
+    </ul>
+
+</div>
+
+{% endif %}
+
+
+<!-- =====================================================
+     KPI CARDS
+===================================================== -->
+
+<div class="cards">
+
+
+    <!-- TOTAL DRIVERS -->
+
+    <div class="card">
+
+        <h3>
+            Total Drivers
+        </h3>
+
+        <p>
+            {{ drivers|length }}
+        </p>
+
+    </div>
+
+
+    <!-- ACTIVE DRIVERS -->
+
+    <div class="card">
+
+        <h3>
+            Active Drivers
+        </h3>
+
+        <p>
+            {{
+                drivers
+                |selectattr("status", "equalto", "Active")
+                |list
+                |length
+            }}
+        </p>
+
+    </div>
+
+
+    <!-- TOTAL TRIPS -->
+
+    <div class="card">
+
+        <h3>
+            Total Trips
+        </h3>
+
+        <p>
+            {{ trip_summary.total_trips }}
+        </p>
+
+    </div>
+
+
+    <!-- COMPLETED TRIPS -->
+
+    <div class="card">
+
+        <h3>
+            Completed Trips
+        </h3>
+
+        <p>
+            {{ trip_summary.completed_trips }}
+        </p>
+
+    </div>
+
+
+    <!-- CANCELLED TRIPS -->
+
+    <div class="card">
+
+        <h3>
+            Cancelled Trips
+        </h3>
+
+        <p>
+            {{ trip_summary.cancelled_trips }}
+        </p>
+
+    </div>
+
+
+    <!-- COMPLETION RATE -->
+
+    <div class="card">
+
+        <h3>
+            Completion Rate
+        </h3>
+
+        <p>
+
+            {% if trip_summary.total_trips > 0 %}
+
+                {{
+                    "%.2f"|format(
+                        (trip_summary.completed_trips
+                        / trip_summary.total_trips) * 100
+                    )
+                }}%
+
+            {% else %}
+
+                0.00%
+
+            {% endif %}
+
+        </p>
+
+    </div>
+
+
+    <!-- TOTAL FARE -->
+
+    <div class="card">
+
+        <h3>
+            Total Fare
+        </h3>
+
+        <p>
+            ₹{{ "%.2f"|format(trip_summary.total_fare) }}
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     CITY PERFORMANCE
+===================================================== -->
+
+<section class="panel">
+
+    <h2>
+        City Performance
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>City</th>
+
+                <th>Total Trips</th>
+
+                <th>Completed</th>
+
+                <th>Cancelled</th>
+
+                <th>Completion %</th>
+
+                <th>Cancellation %</th>
+
+                <th>Total Fare</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in city_summaries %}
+
+            <tr>
+
+                <td>
+                    {{ row.city }}
+                </td>
+
+                <td>
+                    {{ row.total_trips }}
+                </td>
+
+                <td>
+                    {{ row.completed_trips }}
+                </td>
+
+                <td>
+                    {{ row.cancelled_trips }}
+                </td>
+
+
+                <!-- COMPLETION % -->
+
+                <td>
+
+                    {% if row.total_trips > 0 %}
+
+                        {{
+                            "%.2f"|format(
+                                (row.completed_trips
+                                / row.total_trips) * 100
+                            )
+                        }}%
+
+                    {% else %}
+
+                        0.00%
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- CANCELLATION % -->
+
+                <td>
+
+                    {% if row.total_trips > 0 %}
+
+                        {{
+                            "%.2f"|format(
+                                (row.cancelled_trips
+                                / row.total_trips) * 100
+                            )
+                        }}%
+
+                    {% else %}
+
+                        0.00%
+
+                    {% endif %}
+
+                </td>
+
+
+                <!-- TOTAL FARE -->
+
+                <td>
+                    ₹{{ "%.2f"|format(row.total_fare) }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="7">
+                    No city data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     DRIVER PERFORMANCE
+===================================================== -->
+
+<section class="panel">
+
+    <h2>
+        Driver Performance
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Driver ID</th>
+
+                <th>Driver Name</th>
+
+                <th>City</th>
+
+                <th>Vehicle</th>
+
+                <th>Rating</th>
+
+                <th>Status</th>
+
+                <th>Total Trips</th>
+
+                <th>Completed</th>
+
+                <th>Cancelled</th>
+
+                <th>Total Fare</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in driver_summaries %}
+
+            <tr>
+
+                <td>
+                    {{ row.driver_id }}
+                </td>
+
+                <td>
+                    {{ row.driver_name }}
+                </td>
+
+                <td>
+                    {{ row.city }}
+                </td>
+
+                <td>
+                    {{ row.vehicle_type }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(row.rating) }}
+                </td>
+
+                <td>
+                    {{ row.status }}
+                </td>
+
+                <td>
+                    {{ row.total_trips }}
+                </td>
+
+                <td>
+                    {{ row.completed_trips }}
+                </td>
+
+                <td>
+                    {{ row.cancelled_trips }}
+                </td>
+
+                <td>
+                    ₹{{ "%.2f"|format(row.total_fare) }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="10">
+                    No driver data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     TOP 10 DRIVERS
+===================================================== -->
+
+<section class="panel">
+
+    <h2>
+        Top 10 Drivers by Fare
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Rank</th>
+
+                <th>Driver ID</th>
+
+                <th>Driver Name</th>
+
+                <th>City</th>
+
+                <th>Total Fare</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in top_drivers %}
+
+            <tr>
+
+                <td>
+                    {{ loop.index }}
+                </td>
+
+                <td>
+                    {{ row.driver.driver_id }}
+                </td>
+
+                <td>
+                    {{ row.driver.driver_name }}
+                </td>
+
+                <td>
+                    {{ row.driver.city }}
+                </td>
+
+                <td>
+                    ₹{{ "%.2f"|format(row.total_fare) }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="5">
+                    No driver ranking data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     TOP 10 ZONES
+===================================================== -->
+
+<section class="panel">
+
+    <h2>
+        Top 10 Zones by Demand
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Rank</th>
+
+                <th>City</th>
+
+                <th>Zone</th>
+
+                <th>Total Trips</th>
+
+                <th>Completed</th>
+
+                <th>Cancelled</th>
+
+                <th>Completion %</th>
+
+                <th>Total Fare</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in top_zones %}
+
+            <tr>
+
+                <td>
+                    {{ loop.index }}
+                </td>
+
+                <td>
+                    {{ row.city }}
+                </td>
+
+                <td>
+                    {{ row.zone }}
+                </td>
+
+                <td>
+                    {{ row.total_trips }}
+                </td>
+
+                <td>
+                    {{ row.completed_trips }}
+                </td>
+
+                <td>
+                    {{ row.cancelled_trips }}
+                </td>
+
+
+                <!-- COMPLETION % -->
+
+                <td>
+
+                    {% if row.total_trips > 0 %}
+
+                        {{
+                            "%.2f"|format(
+                                (row.completed_trips
+                                / row.total_trips) * 100
+                            )
+                        }}%
+
+                    {% else %}
+
+                        0.00%
+
+                    {% endif %}
+
+                </td>
+
+
+                <td>
+                    ₹{{ "%.2f"|format(row.total_fare) }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="8">
+                    No zone data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     TRIP STATUS FREQUENCY
+===================================================== -->
+
+<section class="panel">
+
+    <h2>
+        Trip Status Frequency
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Status</th>
+
+                <th>Number of Trips</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for status, count in status_frequency.items() %}
+
+            <tr>
+
+                <td>
+                    {{ status }}
+                </td>
+
+                <td>
+                    {{ count }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="2">
+                    No trip status data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     CANCELLATION REASONS
+===================================================== -->
+
+<section class="panel">
+
+    <h2>
+        Cancellation Reasons
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Reason</th>
+
+                <th>Count</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for reason, count in cancellation_frequency.items() %}
+
+            <tr>
+
+                <td>
+                    {{ reason }}
+                </td>
+
+                <td>
+                    {{ count }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="2">
+                    No cancellation data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+{% endblock %}

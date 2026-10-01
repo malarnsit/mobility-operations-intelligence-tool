@@ -1,0 +1,311 @@
+from services.advanced_analytics_service import (
+    AdvancedAnalyticsService
+)
+
+from models.driver import Driver
+from models.trip import Trip
+from models.activity import DriverActivity
+
+
+def create_test_data():
+
+    drivers = [
+
+        Driver(
+            "D1",
+            "Asha",
+            "Bangalore",
+            "Sedan",
+            4.5,
+            "Active"
+        ),
+
+        Driver(
+            "D2",
+            "Rahul",
+            "Mumbai",
+            "SUV",
+            4.2,
+            "Active"
+        )
+    ]
+
+    trips = [
+
+        Trip(
+            "T1",
+            "D1",
+            "R1",
+            "Bangalore",
+            "Zone A",
+            "Zone B",
+            "2026-01-01 09:00:00",
+            "2026-01-01 09:10:00",
+            "2026-01-01 09:40:00",
+            10,
+            500,
+            "Completed",
+            ""
+        ),
+
+        Trip(
+            "T2",
+            "D1",
+            "R2",
+            "Bangalore",
+            "Zone A",
+            "Zone C",
+            "2026-01-01 10:00:00",
+            "2026-01-01 10:10:00",
+            "2026-01-01 10:40:00",
+            8,
+            400,
+            "Completed",
+            ""
+        ),
+
+        Trip(
+            "T3",
+            "D1",
+            "R3",
+            "Bangalore",
+            "Zone B",
+            "Zone C",
+            "2026-01-01 12:00:00",
+            "2026-01-01 12:10:00",
+            "2026-01-01 12:40:00",
+            12,
+            700,
+            "Completed",
+            ""
+        ),
+
+        Trip(
+            "T4",
+            "D2",
+            "R4",
+            "Mumbai",
+            "Zone A",
+            "Zone B",
+            "2026-01-01 09:00:00",
+            "2026-01-01 09:15:00",
+            "2026-01-01 09:45:00",
+            10,
+            300,
+            "Completed",
+            ""
+        ),
+
+        Trip(
+            "T5",
+            "D2",
+            "R5",
+            "Mumbai",
+            "Zone A",
+            "Zone B",
+            "2026-01-01 10:00:00",
+            "2026-01-01 10:15:00",
+            "2026-01-01 10:45:00",
+            10,
+            350,
+            "Cancelled",
+            "Driver cancelled"
+        )
+    ]
+
+    activities = [
+
+        DriverActivity(
+            "D1",
+            "2026-01-01 09:00:00",
+            "Online"
+        ),
+
+        DriverActivity(
+            "D1",
+            "2026-01-01 09:10:00",
+            "Busy"
+        ),
+
+        DriverActivity(
+            "D1",
+            "2026-01-01 09:40:00",
+            "Idle"
+        ),
+
+        DriverActivity(
+            "D1",
+            "2026-01-01 10:10:00",
+            "Busy"
+        ),
+
+        DriverActivity(
+            "D1",
+            "2026-01-01 10:40:00",
+            "Offline"
+        )
+    ]
+
+    return drivers, trips, activities
+
+
+# =====================================================
+# TOP-K
+# =====================================================
+
+def test_top_k_drivers():
+
+    drivers, trips, activities = create_test_data()
+
+    service = AdvancedAnalyticsService(
+        drivers,
+        trips,
+        activities
+    )
+
+    result = service.top_k_drivers_by_fare(1)
+
+    assert len(result) == 1
+
+    assert result[0]["driver"].driver_id == "D1"
+
+    assert result[0]["total_fare"] == 1600
+
+
+# =====================================================
+# CONSECUTIVE TRIPS
+# =====================================================
+
+def test_consecutive_trip_analysis():
+
+    drivers, trips, activities = create_test_data()
+
+    service = AdvancedAnalyticsService(
+        drivers,
+        trips,
+        activities
+    )
+
+    result = service.consecutive_trip_analysis()
+
+    d1 = next(
+        row
+        for row in result
+        if row["driver_id"] == "D1"
+    )
+
+    assert d1["total_completed_trips"] == 3
+
+    assert d1["longest_consecutive_streak"] == 3
+
+
+# =====================================================
+# IDLE TIME
+# =====================================================
+
+def test_idle_time_analysis():
+
+    drivers, trips, activities = create_test_data()
+
+    service = AdvancedAnalyticsService(
+        drivers,
+        trips,
+        activities
+    )
+
+    result = service.idle_time_analysis(
+        threshold_minutes=30
+    )
+
+    assert len(result) == 2
+
+    d1 = next(
+        row
+        for row in result
+        if row["driver_id"] == "D1"
+    )
+
+    assert d1["total_idle_minutes"] == 50
+
+
+# =====================================================
+# PEAK DEMAND
+# =====================================================
+
+def test_peak_demand_analysis():
+
+    drivers, trips, activities = create_test_data()
+
+    service = AdvancedAnalyticsService(
+        drivers,
+        trips,
+        activities
+    )
+
+    result = service.peak_demand_analysis()
+
+    assert len(result) > 0
+
+    assert "hour" in result[0]
+
+    assert "trip_count" in result[0]
+
+
+# =====================================================
+# DRIVER UTILIZATION
+# =====================================================
+
+def test_driver_utilization():
+
+    drivers, trips, activities = create_test_data()
+
+    service = AdvancedAnalyticsService(
+        drivers,
+        trips,
+        activities
+    )
+
+    result = service.driver_utilization()
+
+    assert len(result) == 2
+
+    d1 = next(
+        row
+        for row in result
+        if row["driver_id"] == "D1"
+    )
+
+    assert d1["online_minutes"] == 100
+
+    assert d1["busy_minutes"] == 60
+
+    assert d1["utilization_rate"] == 60
+
+
+# =====================================================
+# CANCELLATION
+# =====================================================
+
+def test_cancellation_intelligence():
+
+    drivers, trips, activities = create_test_data()
+
+    service = AdvancedAnalyticsService(
+        drivers,
+        trips,
+        activities
+    )
+
+    result = service.cancellation_intelligence()
+
+    assert result["total_cancelled"] == 1
+
+    assert result["overall_cancellation_rate"] == 20
+
+    assert len(result["by_city"]) == 2
+
+    assert len(result["by_driver"]) == 2
+
+    assert len(result["by_reason"]) == 1
+
+    assert result["by_reason"]["Driver cancelled"] == 1

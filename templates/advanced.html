@@ -1,0 +1,574 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        Advanced Analytics
+    </h2>
+
+    <p>
+        Day 3 - DSA + Advanced Operations Analytics
+    </p>
+
+</div>
+
+
+<!-- =====================================================
+     TOP K DRIVERS
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>
+        Top 10 Drivers by Fare
+    </h3>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Rank</th>
+
+                <th>Driver ID</th>
+
+                <th>Driver Name</th>
+
+                <th>City</th>
+
+                <th>Total Fare</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in top_drivers %}
+
+            <tr>
+
+                <td>
+                    {{ loop.index }}
+                </td>
+
+                <td>
+                    {{ row.driver.driver_id }}
+                </td>
+
+                <td>
+                    {{ row.driver.driver_name }}
+                </td>
+
+                <td>
+                    {{ row.driver.city }}
+                </td>
+
+                <td>
+                    ₹{{ "%.2f"|format(row.total_fare) }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="5">
+                    No driver data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     CONSECUTIVE TRIPS
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>
+        Consecutive Completed Trips
+    </h3>
+
+    <p>
+        Measures the longest sequence of completed trips
+        for each driver.
+    </p>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Driver ID</th>
+
+                <th>Driver Name</th>
+
+                <th>Total Completed Trips</th>
+
+                <th>Longest Consecutive Streak</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in consecutive_trips %}
+
+            <tr>
+
+                <td>
+                    {{ row.driver_id }}
+                </td>
+
+                <td>
+                    {{ row.driver_name }}
+                </td>
+
+                <td>
+                    {{ row.total_completed_trips }}
+                </td>
+
+                <td>
+                    {{ row.longest_consecutive_streak }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="4">
+                    No consecutive-trip data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     IDLE TIME
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>
+        Idle Time Analysis
+    </h3>
+
+    <p>
+        Idle periods are gaps of at least 30 minutes
+        between a completed trip's drop time and the
+        next trip's pickup time.
+    </p>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Driver ID</th>
+
+                <th>Driver Name</th>
+
+                <th>Idle Periods</th>
+
+                <th>Total Idle Minutes</th>
+
+                <th>Longest Idle Minutes</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in idle_analysis %}
+
+            <tr>
+
+                <td>
+                    {{ row.driver_id }}
+                </td>
+
+                <td>
+                    {{ row.driver_name }}
+                </td>
+
+                <td>
+                    {{ row.idle_periods }}
+                </td>
+
+                <td>
+                    {{ "%.0f"|format(row.total_idle_minutes) }}
+                </td>
+
+                <td>
+                    {{ "%.0f"|format(row.longest_idle_minutes) }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="5">
+                    No idle-time data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     PEAK DEMAND
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>
+        Peak Demand by Hour
+    </h3>
+
+    <p>
+        Number of trip requests received during each hour
+        of the day.
+    </p>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Hour</th>
+
+                <th>Trip Requests</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in peak_demand %}
+
+            <tr>
+
+                <td>
+                    {{ "%02d:00"|format(row.hour) }}
+                </td>
+
+                <td>
+                    {{ row.trip_count }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="2">
+                    No demand data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     DRIVER UTILIZATION
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>
+        Driver Utilization
+    </h3>
+
+    <p>
+        Utilization is calculated as busy minutes divided
+        by online minutes.
+    </p>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Driver ID</th>
+
+                <th>Driver Name</th>
+
+                <th>Online Minutes</th>
+
+                <th>Busy Minutes</th>
+
+                <th>Utilization Rate</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in utilization %}
+
+            <tr>
+
+                <td>
+                    {{ row.driver_id }}
+                </td>
+
+                <td>
+                    {{ row.driver_name }}
+                </td>
+
+                <td>
+                    {{ "%.0f"|format(row.online_minutes) }}
+                </td>
+
+                <td>
+                    {{ "%.0f"|format(row.busy_minutes) }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(row.utilization_rate) }}%
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="5">
+                    No utilization data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     CANCELLATION INTELLIGENCE
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>
+        Cancellation Intelligence
+    </h3>
+
+
+    <div class="kpi-grid">
+
+        <div class="kpi-card">
+
+            <h4>
+                Total Cancelled
+            </h4>
+
+            <p>
+                {{ cancellation.total_cancelled }}
+            </p>
+
+        </div>
+
+
+        <div class="kpi-card">
+
+            <h4>
+                Overall Cancellation Rate
+            </h4>
+
+            <p>
+                {{ "%.2f"|format(
+                    cancellation.overall_cancellation_rate
+                ) }}%
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <h4>
+        Cancellation by City
+    </h4>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>City</th>
+
+                <th>Total Trips</th>
+
+                <th>Cancelled</th>
+
+                <th>Cancellation Rate</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in cancellation.by_city %}
+
+            <tr>
+
+                <td>
+                    {{ row.city }}
+                </td>
+
+                <td>
+                    {{ row.total }}
+                </td>
+
+                <td>
+                    {{ row.cancelled }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(
+                        row.rate
+                    ) }}%
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="4">
+                    No city cancellation data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <h4>
+        Cancellation by Reason
+    </h4>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Cancellation Reason</th>
+
+                <th>Count</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in cancellation.by_reason %}
+
+            <tr>
+
+                <td>
+                    {{ row.reason }}
+                </td>
+
+                <td>
+                    {{ row.count }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="2">
+                    No cancellation reason data available.
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+{% endblock %}

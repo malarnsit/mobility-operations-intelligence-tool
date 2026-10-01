@@ -1,0 +1,29 @@
+# Virtual environment
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Pytest
+.pytest_cache/
+
+# Flask uploaded files
+data/uploads/
+
+# Environment variables / secrets
+.env
+.env.*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+
+# Python build files
+*.egg-info/
+dist/
+build/

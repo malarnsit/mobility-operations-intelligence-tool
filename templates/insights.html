@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        Anomaly Detection & Business Insights
+    </h2>
+
+    <p>
+        Day 4 - Anomaly Detection, Business Insights
+        and Integration
+    </p>
+
+</div>
+
+
+<!-- =====================================================
+     BUSINESS INSIGHTS
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>Business Insights</h3>
+
+    {% if insights %}
+
+        {% for insight in insights %}
+
+            <div class="alert success">
+
+                {{ insight }}
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>
+            No business insights are available.
+        </p>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =====================================================
+     ANOMALY SUMMARY
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>Anomaly Summary</h3>
+
+    <div class="kpi-grid">
+
+        <div class="kpi-card">
+
+            <h4>
+                Total Anomalies
+            </h4>
+
+            <p>
+                {{ anomaly_summary.total_anomalies }}
+            </p>
+
+        </div>
+
+
+        <div class="kpi-card">
+
+            <h4>
+                High Fare Threshold
+            </h4>
+
+            <p>
+                ₹{{ "%.2f"|format(
+                    thresholds.fare_threshold
+                ) }}
+            </p>
+
+        </div>
+
+
+        <div class="kpi-card">
+
+            <h4>
+                Minimum Distance
+            </h4>
+
+            <p>
+                {{ "%.2f"|format(
+                    thresholds.min_distance_km
+                ) }} km
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <h4>
+        Anomalies by Type
+    </h4>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Anomaly Type
+                </th>
+
+                <th>
+                    Count
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for anomaly_type, count
+                  in anomaly_summary.by_type.items() %}
+
+            <tr>
+
+                <td>
+                    {{ anomaly_type }}
+                </td>
+
+                <td>
+                    {{ count }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td colspan="2">
+
+                    No anomalies detected.
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- =====================================================
+     ANOMALY DETAILS
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>
+        Anomaly Details
+    </h3>
+
+
+    {% if anomalies %}
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Type
+                </th>
+
+                <th>
+                    Trip ID
+                </th>
+
+                <th>
+                    Driver ID
+                </th>
+
+                <th>
+                    Value
+                </th>
+
+                <th>
+                    Message
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for anomaly in anomalies %}
+
+            <tr>
+
+                <td>
+                    {{ anomaly.type }}
+                </td>
+
+                <td>
+                    {{ anomaly.trip_id }}
+                </td>
+
+                <td>
+                    {{ anomaly.driver_id }}
+                </td>
+
+                <td>
+                    {{ anomaly.value }}
+                </td>
+
+                <td>
+                    {{ anomaly.message }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    {% else %}
+
+    <p>
+        No anomalies detected.
+    </p>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =====================================================
+     DAY 4 STATUS
+     ===================================================== -->
+
+<section class="card">
+
+    <h3>
+        Day 4 Implementation Status
+    </h3>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Requirement
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            <tr>
+
+                <td>
+                    Anomaly Detector
+                </td>
+
+                <td>
+                    Implemented
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    Configurable Thresholds
+                </td>
+
+                <td>
+                    Implemented
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    Business Insights Engine
+                </td>
+
+                <td>
+                    Implemented
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    Error Handling
+                </td>
+
+                <td>
+                    Implemented
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    Edge Case Handling
+                </td>
+
+                <td>
+                    Implemented
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    Flask Integration
+                </td>
+
+                <td>
+                    Implemented
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</section>
+
+{% endblock %}

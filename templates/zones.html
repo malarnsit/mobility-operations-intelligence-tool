@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1>
+    Zone Analytics
+</h1>
+
+
+<!-- CITY ANALYTICS -->
+
+<section class="panel">
+
+    <h2>
+        City Performance
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>City</th>
+
+                <th>Total Trips</th>
+
+                <th>Completed</th>
+
+                <th>Cancelled</th>
+
+                <th>Completion %</th>
+
+                <th>Cancellation %</th>
+
+                <th>Revenue</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in city_summaries %}
+
+            <tr>
+
+                <td>
+                    {{ row.city }}
+                </td>
+
+                <td>
+                    {{ row.total_trips }}
+                </td>
+
+                <td>
+                    {{ row.completed_trips }}
+                </td>
+
+                <td>
+                    {{ row.cancelled_trips }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(
+                        row.completion_rate
+                    ) }}%
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(
+                        row.cancellation_rate
+                    ) }}%
+                </td>
+
+                <td>
+                    ₹{{ "%.2f"|format(
+                        row.revenue
+                    ) }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- TOP ZONES -->
+
+<section class="panel">
+
+    <h2>
+        Top 10 Zones by Demand
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Rank</th>
+
+                <th>City</th>
+
+                <th>Zone</th>
+
+                <th>Total Trips</th>
+
+                <th>Completed</th>
+
+                <th>Cancelled</th>
+
+                <th>Completion %</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in top_zones %}
+
+            <tr>
+
+                <td>
+                    {{ loop.index }}
+                </td>
+
+                <td>
+                    {{ row.city }}
+                </td>
+
+                <td>
+                    {{ row.zone }}
+                </td>
+
+                <td>
+                    {{ row.total_trips }}
+                </td>
+
+                <td>
+                    {{ row.completed_trips }}
+                </td>
+
+                <td>
+                    {{ row.cancelled_trips }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(
+                        row.completion_rate
+                    ) }}%
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- ALL ZONES -->
+
+<section class="panel">
+
+    <h2>
+        All Zone Performance
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>City</th>
+
+                <th>Zone</th>
+
+                <th>Total Trips</th>
+
+                <th>Completed</th>
+
+                <th>Cancelled</th>
+
+                <th>Completion %</th>
+
+                <th>Revenue</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in zone_summaries %}
+
+            <tr>
+
+                <td>
+                    {{ row.city }}
+                </td>
+
+                <td>
+                    {{ row.zone }}
+                </td>
+
+                <td>
+                    {{ row.total_trips }}
+                </td>
+
+                <td>
+                    {{ row.completed_trips }}
+                </td>
+
+                <td>
+                    {{ row.cancelled_trips }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(
+                        row.completion_rate
+                    ) }}%
+                </td>
+
+                <td>
+                    ₹{{ "%.2f"|format(
+                        row.revenue
+                    ) }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+{% endblock %}

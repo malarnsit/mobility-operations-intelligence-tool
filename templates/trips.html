@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1>
+    Trip Analytics
+</h1>
+
+
+<!-- SEARCH -->
+
+<section class="panel">
+
+    <h2>
+        Search Trips
+    </h2>
+
+    <form
+        method="GET"
+        class="search-form"
+    >
+
+        <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            placeholder="Trip ID, Driver ID, Rider ID, City, or Zone"
+        >
+
+        <button type="submit">
+            Search
+        </button>
+
+    </form>
+
+</section>
+
+
+{% if query %}
+
+<div class="alert success">
+
+    Found
+
+    <strong>
+        {{ total_matches }}
+    </strong>
+
+    matching trip(s).
+
+    Showing maximum 100 records.
+
+</div>
+
+{% endif %}
+
+
+<!-- KPI -->
+
+<div class="cards">
+
+    <div class="card">
+
+        <h3>
+            Total Trips
+        </h3>
+
+        <p>
+            {{ summary.total_trips }}
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            Completed
+        </h3>
+
+        <p>
+            {{ summary.completed_trips }}
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            Cancelled
+        </h3>
+
+        <p>
+            {{ summary.cancelled_trips }}
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            Average Fare
+        </h3>
+
+        <p>
+            ₹{{ "%.2f"|format(
+                summary.average_fare
+            ) }}
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            Average Distance
+        </h3>
+
+        <p>
+            {{ "%.2f"|format(
+                summary.average_distance
+            ) }}
+            km
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            Cancellation Rate
+        </h3>
+
+        <p>
+            {{ "%.2f"|format(
+                summary.cancellation_rate
+            ) }}%
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- TRIPS -->
+
+<section class="panel">
+
+    <h2>
+        Trip Records
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Trip ID</th>
+
+                <th>Driver ID</th>
+
+                <th>Rider ID</th>
+
+                <th>City</th>
+
+                <th>Pickup Zone</th>
+
+                <th>Drop Zone</th>
+
+                <th>Status</th>
+
+                <th>Distance</th>
+
+                <th>Fare</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for trip in trips %}
+
+            <tr>
+
+                <td>
+                    {{ trip.trip_id }}
+                </td>
+
+                <td>
+                    {{ trip.driver_id }}
+                </td>
+
+                <td>
+                    {{ trip.rider_id }}
+                </td>
+
+                <td>
+                    {{ trip.city }}
+                </td>
+
+                <td>
+                    {{ trip.pickup_zone }}
+                </td>
+
+                <td>
+                    {{ trip.drop_zone }}
+                </td>
+
+                <td>
+                    {{ trip.status }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(
+                        trip.distance_km
+                    ) }}
+                    km
+                </td>
+
+                <td>
+                    ₹{{ "%.2f"|format(
+                        trip.fare
+                    ) }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- STATUS FREQUENCY -->
+
+<section class="panel">
+
+    <h2>
+        Trip Status Frequency
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Status</th>
+
+                <th>Number of Trips</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for status, count
+                in status_frequency.items() %}
+
+            <tr>
+
+                <td>
+                    {{ status }}
+                </td>
+
+                <td>
+                    {{ count }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- CANCELLATION -->
+
+<section class="panel">
+
+    <h2>
+        Cancellation Reason Frequency
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Cancellation Reason</th>
+
+                <th>Count</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for reason, count
+                in cancellation_frequency.items() %}
+
+            <tr>
+
+                <td>
+                    {{ reason }}
+                </td>
+
+                <td>
+                    {{ count }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<h1>
+    Driver Analytics
+</h1>
+
+
+<!-- SEARCH -->
+
+<section class="panel">
+
+    <h2>
+        Search Driver
+    </h2>
+
+    <form
+        method="GET"
+        class="search-form"
+    >
+
+        <input
+            type="text"
+            name="q"
+            value="{{ query }}"
+            placeholder="Driver ID, name, or city"
+        >
+
+        <button type="submit">
+            Search
+        </button>
+
+    </form>
+
+</section>
+
+
+{% if query and not driver_summaries %}
+
+<div class="alert warning">
+
+    No driver found for:
+
+    <strong>
+        {{ query }}
+    </strong>
+
+</div>
+
+{% endif %}
+
+
+<!-- DRIVER TABLE -->
+
+<section class="panel">
+
+    <h2>
+        Driver Performance
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Driver</th>
+
+                <th>City</th>
+
+                <th>Status</th>
+
+                <th>Total Trips</th>
+
+                <th>Completed</th>
+
+                <th>Cancelled</th>
+
+                <th>Completion %</th>
+
+                <th>Cancellation %</th>
+
+                <th>Revenue</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in driver_summaries %}
+
+            <tr>
+
+                <td>
+                    {{ row.driver.driver_id }}
+                    -
+                    {{ row.driver.driver_name }}
+                </td>
+
+                <td>
+                    {{ row.driver.city }}
+                </td>
+
+                <td>
+                    {{ row.driver.status }}
+                </td>
+
+                <td>
+                    {{ row.total_trips }}
+                </td>
+
+                <td>
+                    {{ row.completed_trips }}
+                </td>
+
+                <td>
+                    {{ row.cancelled_trips }}
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(
+                        row.completion_rate
+                    ) }}%
+                </td>
+
+                <td>
+                    {{ "%.2f"|format(
+                        row.cancellation_rate
+                    ) }}%
+                </td>
+
+                <td>
+                    ₹{{ "%.2f"|format(
+                        row.total_fare
+                    ) }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<!-- TOP DRIVERS -->
+
+<section class="panel">
+
+    <h2>
+        Top 10 Drivers by Revenue
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Rank</th>
+
+                <th>Driver</th>
+
+                <th>City</th>
+
+                <th>Trips</th>
+
+                <th>Revenue</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for row in top_drivers %}
+
+            <tr>
+
+                <td>
+                    {{ loop.index }}
+                </td>
+
+                <td>
+                    {{ row.driver.driver_id }}
+                    -
+                    {{ row.driver.driver_name }}
+                </td>
+
+                <td>
+                    {{ row.driver.city }}
+                </td>
+
+                <td>
+                    {{ row.total_trips }}
+                </td>
+
+                <td>
+                    ₹{{ "%.2f"|format(
+                        row.total_fare
+                    ) }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+{% endblock %}

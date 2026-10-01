@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card">
+    <h2>Upload Dataset</h2>
+
+    {% if errors %}
+        <div class="error">
+            <h3>Please fix the following:</h3>
+            <ul>
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <label>Drivers CSV</label>
+        <input type="file" name="drivers_file" accept=".csv" required>
+
+        <label>Trips CSV</label>
+        <input type="file" name="trips_file" accept=".csv" required>
+
+        <label>Driver Activity CSV</label>
+        <input type="file" name="activity_file" accept=".csv" required>
+
+        <button type="submit">LOAD DATA</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Expected CSV files</h2>
+    <p><strong>drivers.csv</strong>: driver_id, driver_name, city, vehicle_type, rating, status</p>
+    <p><strong>trips.csv</strong>: trip_id, driver_id, rider_id, city, pickup_zone, drop_zone, request_time, pickup_time, drop_time, distance_km, fare, status, cancellation_reason</p>
+    <p><strong>driver_activity.csv</strong>: driver_id, timestamp, status</p>
+</section>
+{% endblock %}

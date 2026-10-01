@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Mobility Operations Intelligence Tool
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<header>
+
+    <div class="header-content">
+
+        <h1>
+            Mobility Operations Intelligence Tool
+        </h1>
+
+
+        <nav>
+
+            <a href="{{ url_for('index') }}">
+                Upload
+            </a>
+
+
+            <a href="{{ url_for('dashboard') }}">
+                Dashboard
+            </a>
+
+
+            <a href="{{ url_for('drivers') }}">
+                Drivers
+            </a>
+
+
+            <a href="{{ url_for('trips') }}">
+                Trips
+            </a>
+
+
+            <a href="{{ url_for('zones') }}">
+                Zones
+            </a>
+
+
+            <a href="{{ url_for('advanced') }}">
+                Advanced Analytics
+            </a>
+
+
+            <!-- DAY 4 -->
+
+            <a href="{{ url_for('insights') }}">
+                Insights
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+
+    {% with messages = get_flashed_messages(
+        with_categories=true
+    ) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                <div class="alert {{ category }}">
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    {% block content %}
+
+    {% endblock %}
+
+
+</main>
+
+
+<footer>
+
+    <p>
+
+        Mobility Operations Intelligence Tool
+
+        | Day 4 - Anomaly Detection & Business Insights
+
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>
